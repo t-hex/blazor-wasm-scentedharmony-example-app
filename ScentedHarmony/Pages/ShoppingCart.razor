@@ -1,0 +1,268 @@
+﻿@page "/shoppingcart"
+@using ScentedHarmony.Services
+@using ScentedHarmony.Services.DTO
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@inherits LayoutComponentBase
+
+@inject NavigationManager NM
+@inject IShoppingCartService SCS
+
+@code {
+
+    public enum DeliveryOption
+    {
+        None,
+        DpdToAddress,
+        PostToAddress,
+        PostToLocalOffice,
+    }
+    
+    public enum PaymentOption
+    {
+        None,
+        CardOnline,
+        CardAtDelivery,
+    }
+    
+    public class RadioButtonOption<T>
+    {
+        public string Label { get; set; }
+        
+        public T Value { get; set; }
+        
+        public float Price { get; set; }
+    }
+
+    public class CustomerDetails
+    {
+        public string Salutation { get; set; }
+
+        public string FirstName { get; set; }
+        
+        public string Surname { get; set; }
+        
+        public string Email { get; set; }
+        
+        public string PhoneNumber { get; set; }
+        
+        public string AddressLine1 { get; set; }
+        
+        public string City { get; set; }
+        
+        public string PostalCode { get; set; }
+        
+        public string Note { get; set; }
+        
+        public bool Agreement { get; set; }
+    }
+}
+
+<MudMainContent>
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudItem xs="12" Class="pb-5">
+            <MudText Align="Align.Center" Typo="Typo.h1" Style="font-family: 'Dancing Script'">Nákupný košík</MudText>
+            <MudDivider/>
+        </MudItem>
+        @if (!_shoppingCartOrders.Any())
+        {
+            <MudItem xs="12" Class="d-flex flex-column justify-content-start align-content-center">
+                <MudText Align="Align.Center" Class="pb-4">
+                    <MudIcon Style="font-size: 10vw" Size="Size.Large" Color="Color.Error" Icon="@Icons.Material.Filled.SentimentDissatisfied"></MudIcon>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.body1" Class="pb-2">V košíku momentálne nemáte žiadne produkty.</MudText>
+            </MudItem>
+        }
+        else
+        {
+            <MudTabs Centered="true" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-5">
+                <MudTabPanel Text="Nákupný košík" Icon="@Icons.Material.Filled.ShoppingCart">
+                    <MudDataGrid Hover="true" HeaderClass="shopping-cart-table-header" Items="@_shoppingCartOrders" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+                        <Columns>
+                            <PropertyColumn Property="x => x.Product.Name" Title="Názov produktu"  />
+                            <PropertyColumn Property="x => x.Product.Flavor.FlavorDescriptor" Title="Variant" />
+                            <PropertyColumn Property="x => x.Product.PackageSize.SizeDescriptor" Title="Veľkosť" />
+                            <PropertyColumn Property="x => x.Amount" Title="Počet kusov" />
+                            <PropertyColumn Property="@(x => x.Product.PackageSize.Price.ToString(".00"))" Title="Cena/produkt €" />
+                            <PropertyColumn Property="@(x => (x.Product.PackageSize.Price * x.Amount).ToString(".00"))" Title="Celková suma €" />
+                            <TemplateColumn CellClass="d-flex justify-end">
+                                <CellTemplate>
+                                    <MudStack Row>
+                                        <MudIconButton OnClick="@(() => OnOrderDeleted(context))" Size="Size.Small" Icon="@Icons.Material.Filled.RemoveShoppingCart" Color="Color.Error" />
+                                    </MudStack>
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                    </MudDataGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Vaše údaje" Icon="@Icons.Material.Filled.DeliveryDining">
+                    <MudForm @bind-IsValid="@CustomerInfoValid" @bind-Errors="@CustomerInfoErrors">
+                        <MudText Typo="Typo.h5" Class="p-4">Osobné údaje</MudText>
+                        <MudPaper Elevation="2" Outlined="true" Class="pa-4">
+                            <div class="d-flex">
+                                <MudRadioGroup Required="true" @bind-Value="@_customerInfo.Salutation" RequiredError="Vyberte oslovenie.">
+                                    <MudRadio Value="@("Pán")">Pán</MudRadio>
+                                    <MudRadio Value="@("Pani")">Pani</MudRadio>
+                                </MudRadioGroup>
+                            </div>
+                            <MudTextField T="string" @bind-Value="@_customerInfo.FirstName" Label="Meno" Required="true" RequiredError="Meno je povinné."/>
+                            <MudTextField T="string" @bind-Value="@_customerInfo.Surname" Label="Priezvisko" Required="true" RequiredError="Priezvisko je povinné." />
+                            <MudTextField T="string" @bind-Value="@_customerInfo.Email" Label="Email" Required="true" RequiredError="E-mail je povinný." Validation="@(new EmailAddressAttribute { ErrorMessage = "Nesprávny formát e-mailovej adresy."})" />
+                            <MudTextField T="string" @bind-Value="@_customerInfo.PhoneNumber" Label="Tel. číslo" Required="true" InputType="InputType.Telephone" RequiredError="Telefónne číslo je povinné" Validation="@(new Func<string, string>(TelephoneNumberValidation))"/>
+                        </MudPaper>
+                        
+                        <MudText Typo="Typo.h5" Class="p-4">Fakturačné údaje</MudText> 
+                        <MudPaper Elevation="2" Outlined="true" Class="pa-4">
+                            <MudTextField T="string" @bind-Value="@_customerInfo.AddressLine1" Label="Ulica a číslo domu" Required="true" RequiredError="Ulica je povinná."/>
+                            <MudTextField T="string" @bind-Value="@_customerInfo.City" Label="Mesto" Required="true" RequiredError="Mesto je povinné." />
+                            <MudTextField T="string" @bind-Value="@_customerInfo.PostalCode" Label="PSČ" Required="true" RequiredError="PSČ je povinné." Validation="@(new Func<string, string>(PostalCodeValidation))"/>
+                            <MudTextField T="string" @bind-Value="@_customerInfo.Note" Label="Poznámka" Variant="Variant.Text" Lines="5" />
+                            <div class="d-flex align-center justify-space-between">
+                                <MudCheckBox T="bool" @bind-Value="@_customerInfo.Agreement" Required="true" RequiredError="Pre pokračovanie musíte súhlasiť s obchodnými podmienkami." Label="Súhlasím s obchodnými podmienkami."/>
+                                @* <MudButton OnClick="" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!CustomerInfoValid)" Class="ml-auto">Prejsť na platbu</MudButton> *@
+                            </div>
+                        </MudPaper>
+                    </MudForm>
+                </MudTabPanel>
+                <MudTabPanel Text="Platba a spôsob doručenia" Icon="@Icons.Material.Filled.Payment" Disabled="@(!CustomerInfoValid)">
+                    <MudText Typo="Typo.h5" Class="p-4">Vyberte spôsob doručenia</MudText>
+                    <MudPaper Elevation="2" Outlined="true" Class="pa-4">
+                        <MudRadioGroup Required="true" RequiredError="Vyberte spôsob doručenia." @bind-Value="@_selectedDeliveryOption">
+                            <MudGrid>
+                                @foreach (var deliveryOpt in _deliveryOptions.Where(o => o.Value != DeliveryOption.None))
+                                {
+                                    <MudItem xs="6" Class="d-flex flex-column justify-content-end align-content-center">
+                                        <MudText Align="Align.Left"><MudRadio Value="@deliveryOpt.Value">@deliveryOpt.Label</MudRadio></MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="d-flex flex-column justify-content-center align-content-center">
+                                        <MudText Align="Align.Center">@(deliveryOpt.Price > 0.0 ? deliveryOpt.Price.ToString(".00") : "Zdarma")€</MudText>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudRadioGroup>
+                    </MudPaper>
+                    
+                    <MudText Typo="Typo.h5" Class="p-4">Vyberte spôsob platby</MudText>
+                    <MudPaper Elevation="2" Outlined="true" Class="pa-4">
+                        <MudRadioGroup Required="true" RequiredError="Vyberte spôsob platby." @bind-Value="@_selectedPaymentOption">
+                            <MudGrid>
+                                @foreach (var paymentOpt in _paymentOptions.Where(o => o.Value != PaymentOption.None))
+                                {
+                                    <MudItem xs="6" Class="d-flex flex-column justify-content-end align-content-center">
+                                        <MudText Align="Align.Left"><MudRadio Value="@paymentOpt.Value">@paymentOpt.Label</MudRadio></MudText>
+                                    </MudItem>
+                                    <MudItem xs="6" Class="d-flex flex-column justify-content-center align-content-center">
+                                        <MudText Align="Align.Center">@(paymentOpt.Price > 0.0 ? paymentOpt.Price.ToString(".00") + "€" : "Zdarma")</MudText>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudRadioGroup>
+                    </MudPaper>
+                    <MudDivider/>
+                    <MudButton EndIcon="@Icons.Material.Filled.Approval" OnClick="@(() => { _isConfirmationDialog = true; })" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
+                        Potvrdiť objednávku s povinnosťou platby
+                    </MudButton>
+                </MudTabPanel>
+            </MudTabs>
+        }
+    </MudContainer>
+</MudMainContent>
+
+<MudDialog Style="background-color: var(--mud-palette-background)" @bind-IsVisible="@_isConfirmationDialog" Position="DialogPosition.Center" Options="@_confirmationDialogOptions">
+    <TitleContent>
+        <MudText Align="Align.Center" Typo="Typo.h5">Objednávka potvrdená</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Align="Align.Center" >
+            <MudIcon Style="font-size: 10.0rem" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success"/>
+        </MudText>
+        <MudText Align="Align.Center" Typo="Typo.body2">Toto je iba demo projekt. Vaše osobné údaje nie sú uložené v žiadnej databáze a nebudete presmerovaný na žiadnu platobnú bránu.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton FullWidth="true" Color="Color.Primary" Variant="Variant.Filled" OnClick="OnConfirmOrderPopupClicked">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .shopping-cart-table-header span {
+        font-weight: bold;
+    }
+</style>
+
+@code {
+    private bool _isConfirmationDialog = false;
+    private DialogOptions _confirmationDialogOptions = new()
+    {
+        DisableBackdropClick = true,
+        CloseButton = false,
+        CloseOnEscapeKey = false
+    };
+    
+    private IEnumerable<Order> _shoppingCartOrders { get; set; } = Array.Empty<Order>();
+
+    private CustomerDetails _customerInfo = new();
+    private bool CustomerInfoValid;
+    private string[] CustomerInfoErrors = Array.Empty<string>();
+
+    private DeliveryOption _selectedDeliveryOption = DeliveryOption.None; 
+    private RadioButtonOption<DeliveryOption>[] _deliveryOptions =
+    [
+        new RadioButtonOption<DeliveryOption> { Label = "DPD (na adresu)", Value = DeliveryOption.DpdToAddress, Price = 4.5f  },
+        new RadioButtonOption<DeliveryOption> { Label = "Poštou (na adresu)", Value = DeliveryOption.PostToAddress, Price = 3.5f },
+        new RadioButtonOption<DeliveryOption> { Label = "Poštou (na pobočku)", Value = DeliveryOption.PostToLocalOffice, Price = 2.5f },
+    ];
+    
+    private PaymentOption _selectedPaymentOption = PaymentOption.None; 
+    private RadioButtonOption<PaymentOption>[] _paymentOptions =
+    [
+        new RadioButtonOption<PaymentOption> { Label = "Kartou online", Value = PaymentOption.CardOnline, Price = 0.0f  },
+        new RadioButtonOption<PaymentOption> { Label = "Kartou pri prevzatí", Value = PaymentOption.CardAtDelivery, Price = 1.5f },
+    ];
+    
+    protected override void OnInitialized()
+    {
+        _shoppingCartOrders = SCS.GetAllShoppingCartOrders();
+    }
+
+    private void OnOrderDeleted(CellContext<Order> ctx)
+    {
+        SCS.RemoveOrderFromShoppingCart(ctx.Item);
+        _shoppingCartOrders = SCS.GetAllShoppingCartOrders();
+    }
+
+    private string TelephoneNumberValidation(string? phoneNumber)
+    {
+        if (phoneNumber == null) return "Toto pole je povinné";
+        
+        const string pattern = @"^\+\d{3}\s?\d{3}\s?\d{3}\s?\d{3}$";
+        var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+        if (!regex.IsMatch(phoneNumber))
+        {
+            return "Nesprávny formát telefónneho čísla (+421 XXX YYY ZZZ).";
+        }
+
+        return string.Empty;
+    }
+    
+    private string PostalCodeValidation(string? postalCode)
+    {
+        if (postalCode == null) return "Toto pole je povinné";
+        
+        const string pattern = @"^\d{3}\s?\d{2}$";
+        var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+        if (!regex.IsMatch(postalCode))
+        {
+            return "Nesprávny formát PSČ (XXX YY).";
+        }
+
+        return string.Empty;
+    }
+    
+    private void OnConfirmOrderPopupClicked()
+    {
+        SCS.ClearCart();
+        NM.NavigateTo("/");
+    }
+}

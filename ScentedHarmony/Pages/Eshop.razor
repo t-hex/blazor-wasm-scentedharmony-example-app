@@ -1,0 +1,100 @@
+﻿@page "/eshop"
+@using ScentedHarmony.Services
+@using ScentedHarmony.Services.DTO
+@inherits LayoutComponentBase
+
+@inject IProductService IPS
+@inject IShoppingCartService SCS
+@inject ISnackbar Snackbar
+
+<MudMainContent>
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudItem xs="12" Class="pb-5">
+            <MudText Align="Align.Center" Typo="Typo.h1" Style="font-family: 'Dancing Script'">Naše produkty</MudText>
+            <MudDivider/>
+        </MudItem>
+        <MudItem xs="12" Class="d-flex justify-content-center pb-5">
+            <MudPagination Color="Color.Primary" Selected="_selectedPage" SelectedChanged="OnSelectedPageChanged" BoundaryCount="2" MiddleCount="2" Count="@_totalPagesCount" />
+        </MudItem>
+        <MudGrid Spacing="4" Justify="Justify.Center">
+            @foreach (var item in ProductsList)
+            {
+                <MudItem Class="eshop-item">
+                    <MudCard>
+                        <MudCardMedia Image=@(string.Concat("img/products/", item.Product.PromoImg))/>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h4">@item.Product.PackageSize.Price.ToString(".00") €</MudText>
+                            <MudText Typo="Typo.h6">@item.Product.Name</MudText>
+                            <MudText Typo="Typo.h5">@item.Product.Flavor.FlavorDescriptor, @item.Product.PackageSize.SizeDescriptor</MudText>
+                            <MudText Typo="Typo.body2">@item.Product.Description</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                            @* ValueChanged="@((int v) => OnOrderAmountChanged(v, item))" *@
+                            <MudNumericField Variant="Variant.Text" @bind-Value="@item.Amount" Min=0 Style="margin-top: -10px"/>
+                            <MudIconButton @onclick="@((e) => OnAddToChartClicked(e, item))" Icon="@Icons.Material.Outlined.AddShoppingCart" Color="Color.Primary" aria-label="Add-To-Chart"/>
+                        </MudCardActions>
+                        <MudText Typo="Typo.body2" Class="product-code-text" Align="Align.Center">@item.Product.GetUniqueCode()</MudText>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+        <MudItem xs="12" Class="d-flex justify-content-center pt-5">
+            <MudPagination Color="Color.Primary" Selected="_selectedPage" SelectedChanged="OnSelectedPageChanged" BoundaryCount="2" MiddleCount="2" Count="@_totalPagesCount" />
+        </MudItem>
+    </MudContainer>
+</MudMainContent>
+
+<style>
+    .eshop-item {
+        max-width: 250px;
+    }
+    .product-code-text {
+        font-size: 0.8em;
+        padding-bottom: 10px;
+    }
+</style>
+
+@code {
+    private const int SelectedPageSize = 12;
+    
+    private int _selectedPage  = 1;
+
+    private int _totalProductsCount, _totalPagesCount;
+    
+    private IEnumerable<Order> ProductsList { get; set; } = Array.Empty<Order>();
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        _totalProductsCount = IPS.GetAllProductsCount();
+        _totalPagesCount = _totalProductsCount/SelectedPageSize + (_totalProductsCount % SelectedPageSize > 0 ? 1 : 0);
+        ProductsList = IPS.GetAllProducts(_selectedPage, SelectedPageSize)
+            .Select(p => new Order { Amount = 0, Product = p})
+            .ToList();
+    }
+
+    private void OnSelectedPageChanged(int newSelectedPage)
+    {
+        _selectedPage = newSelectedPage;
+        ProductsList = IPS.GetAllProducts(_selectedPage, SelectedPageSize)
+            .Select(p => new Order { Amount = 0, Product = p})
+            .ToList();
+    }
+
+    private void OnAddToChartClicked(MouseEventArgs _, Order order)
+    {
+        if (order.Amount <= 0) return;
+
+        SCS.AddOrderToShoppingCart(order);
+        
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
+        Snackbar.Add($"Tovar {order.Product.GetUniqueCode()} bol pridaný do košíka ({order.Amount}x)",
+            Severity.Success, (opt) => { opt.Icon = Icons.Material.Filled.AddShoppingCart; });
+    }
+    
+    // private void OnOrderAmountChanged(int newAmount, Order order)
+    // {
+    //     order.Amount = newAmount;
+    // }
+
+}

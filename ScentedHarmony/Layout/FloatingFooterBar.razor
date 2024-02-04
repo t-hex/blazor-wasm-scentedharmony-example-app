@@ -1,0 +1,25 @@
+﻿@using Microsoft.VisualBasic
+@inherits ComponentBase
+
+@inject NavigationManager NM
+
+<MudGrid Justify="Justify.Center" Style="align-items: center;" Spacing="0" Class="d-flex footer">
+    <MudItem xs="12">
+        <MudText Style="font-weight: bold" Color="Color.Dark" Class="d-flex align-center justify-center mud-width-full">© 2024 Scented Harmony s.r.o</MudText>
+        <MudText Style="font-weight: bold" Color="Color.Dark" Class="d-flex align-center justify-center mud-width-full">Obchodná akadémia, Daxnerova 88</MudText>
+        <MudText Style="font-weight: bold" Color="Color.Dark" Class="d-flex align-center justify-center mud-width-full">093 35 Vranov nad Topľou | IČ: 123456789 | DIČ: 123456789</MudText>
+    </MudItem>
+</MudGrid>
+
+<style>
+    .footer {
+        position: relative;
+        margin-top: -150px;
+        height: 150px;
+        background-image: linear-gradient(to top, rgb(137 151 0 / 30%), var(--bs-body-bg) 100%), url("leaves.png"); /* W3C */
+    }
+</style>
+
+@code {
+    
+}

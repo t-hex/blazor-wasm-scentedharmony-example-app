@@ -1,0 +1,61 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@ScentedHarmonyTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<FloatingAppBar/>
+<MudLayout Class="main-content">
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+<FloatingFooterBar/>
+
+<style>
+    .main-content {
+        min-height: 100vh;
+        padding-bottom: 200px;
+    }
+</style>
+
+@code {
+    MudTheme ScentedHarmonyTheme = new()
+    {
+        Palette = new PaletteLight
+        {
+            Primary = "#8BC34A",  // Light Green
+            PrimaryContrastText = "#fff",
+            Secondary = "#CDDC39",  // Lime
+            SecondaryContrastText = "#000",
+            Tertiary = "#D4E157",  // Lime Accent
+            TertiaryContrastText = "#000",
+            Info = "#AED581",  // Light Green Accent
+            InfoContrastText = "#000",
+            Success = "#C5E1A5",  // Light Green Accent
+            SuccessContrastText = "#000",
+            Warning = "#FFD54F",  // Amber
+            WarningContrastText = "#000",
+            Error = "#FF8A65",  // Deep Orange
+            ErrorContrastText = "#fff",
+            Dark = "#689F38",  // Dark Green
+            DarkContrastText = "#fff",
+            TextPrimary = "rgba(0, 0, 0, 0.87)",
+            TextSecondary = "rgba(0, 0, 0, 0.6)",
+            TextDisabled = "rgba(0, 0, 0, 0.38)",
+            Background = "#F5F5F5",  // Grey
+            Surface = "rgba(0, 0, 0, 0.0)",  // Light Grey
+            DrawerBackground = "#546E7A",  // Blue Grey
+            DrawerText = "rgba(255, 255, 255, 0.87)",
+            DrawerIcon = "rgba(255, 255, 255, 0.87)",
+            AppbarBackground = "#37474F",  // Blue Grey Dark
+            AppbarText = "rgba(255, 255, 255, 0.87)"
+        },
+
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    };
+}

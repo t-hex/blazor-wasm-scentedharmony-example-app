@@ -1,0 +1,89 @@
+﻿@using Microsoft.VisualBasic
+@using ScentedHarmony.Services
+@inherits ComponentBase
+
+@inject NavigationManager NM
+@inject IShoppingCartState SCS
+
+<MudAppBar Fixed="true" Color="Color.Secondary">
+    <div class="floating-logo mud-toolbar-gutters mud-elevation-4">
+        <img src="ScentedHarmony-LogoMain.png" alt="ScentedHarmony-Logo"/>
+    </div>
+    <div class="floating-logo-w"></div>
+    <MudButton Color="Color.Dark"
+               Variant="Variant.Text"
+               Class="@GetButtonClass(["Home", string.Empty])"
+               @onclick="@(() => NavigateTo("/"))">
+        <MudText>O nás</MudText>
+    </MudButton>
+    <MudButton Color="Color.Dark"
+               Variant="Variant.Text"
+               Class="@GetButtonClass("Eshop")"
+               @onclick="@(() => NavigateTo("/Eshop"))">
+        <MudText>E-shop</MudText>
+    </MudButton>
+    <MudSpacer/>
+    <MudBadge Content="@SCS.ShoppingChartProductsCount" Overlap="true" Class="mx-6 my-4">
+        <MudIconButton OnClick="@(() => NavigateTo("/ShoppingCart"))" Size="Size.Small" Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Dark" />
+    </MudBadge>
+</MudAppBar>
+
+<style>
+    .floating-logo-w {
+        min-width: 200px;
+    }
+    .floating-logo {
+        position: absolute;
+        background-color: var(--mud-palette-secondary) !important;
+        top: 0;
+        left: 50px;
+        transition: max-height 0.3s ease;
+    }
+    .btn-active {
+        border-bottom: 2px solid;
+        border-radius: 0 !important;
+    }
+</style>
+
+@code {
+    private const string NavLinkDefaultClass = "";
+
+    private string _activePage = string.Empty;
+
+    private string GetActivePage() => NM.Uri.Replace(NM.BaseUri, string.Empty)
+        .TrimStart('/')
+        .Split('/')
+        .FirstOrDefault() ?? string.Empty;
+
+    private string GetButtonClass(string page) => GetButtonClass([page]);
+    
+    private string GetButtonClass(string[] pages) =>
+        NavLinkDefaultClass + (
+            pages.Any(p => p.Equals(_activePage, StringComparison.OrdinalIgnoreCase))
+                ? " btn-active"
+                : ""
+        );
+
+    protected override void OnInitialized()
+    {
+        _activePage = GetActivePage();
+        SCS.OnShoppingCartUpdated += RefreshShoppingCartBadge;
+        NM.LocationChanged += HandleLocationChanged;
+    }
+    
+    private void HandleLocationChanged(object? _, LocationChangedEventArgs __)
+    {
+        _activePage = GetActivePage();
+        StateHasChanged();
+    }
+    
+    private void NavigateTo(string page)
+    {
+        NM.NavigateTo(page);
+    }
+
+    private void RefreshShoppingCartBadge()
+    {
+        StateHasChanged();
+    }
+}

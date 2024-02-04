@@ -1,0 +1,138 @@
+﻿@page "/"
+@inherits LayoutComponentBase
+
+<MudCarousel Class="mud-width-full"
+             Style="height:500px;"
+             ShowArrows="@false"
+             ShowBullets="@false"
+             EnableSwipeGesture="@false"
+             AutoCycle="@true" TData="object">
+    <MudCarouselItem Transition="@Transition.Fade" Color="@Color.Primary">
+        <div class="d-flex" style="height:100%">
+            <MudImage Src="img/carousel/scented_harmony_carousel_pic_01.png"
+                      Alt="Pic01"
+                      ObjectPosition="ObjectPosition.Top"
+                      Class="full-width blur-effect"/>
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="@Transition.Fade" Color="@Color.Primary">
+        <div class="d-flex" style="height:100%">
+            <MudImage Src="img/carousel/scented_harmony_carousel_pic_02.png"
+                      Alt="Pic02"
+                      ObjectPosition="ObjectPosition.Top"
+                      Class="full-width blur-effect"/>
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="@Transition.Fade" Color="@Color.Primary">
+        <div class="d-flex" style="height:100%">
+            <MudImage Src="img/carousel/scented_harmony_carousel_pic_03.png"
+                      Alt="Pic03"
+                      ObjectPosition="ObjectPosition.Top"
+                      Class="full-width blur-effect"/>
+        </div>
+    </MudCarouselItem>
+</MudCarousel>
+
+<MudDivider DividerType="DividerType.Middle" />
+
+<MudMainContent>
+    <MudContainer>
+        <MudGrid>
+            <MudItem xs="12" Class="pb-5">
+                <MudText Align="Align.Center" Typo="Typo.h1" Style="font-family: 'Dancing Script'">Scented Harmony</MudText>
+                <MudDivider/>
+            </MudItem>
+            <MudItem xs="6" Style="text-align: right;">
+                <MudImage Style="max-width: 100%"
+                        ObjectPosition="ObjectPosition.Right"
+                        Elevation="1"
+                        Alt="Pic01"
+                        Class="rounded-3"
+                        Src="img/carousel/scented_harmony_carousel_pic_03.png"/>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-center">
+                <MudText Align="Align.Left" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Napätie a stres?</MudText>
+                <MudText Align="Align.Left" Typo="Typo.body1" Class="pb-2">Doprajte si zaslúžený relax. Naše bomby do kúpeľa sú vyrábané z prírodných surovín a lupeňov kvetov.</MudText>
+                <MudText Align="Align.Left" Typo="Typo.body1" Class="pb-2">V našej ponuke nájdete: levanduľu, eukalyptus, mätu, pomaranč, citrón, kokos, škoricu. Produkty ponúkame v rôznych objemoch.</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider/>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-center">
+                <MudText Align="Align.Right" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Očarujte si vaše večery.</MudText>
+                <MudText Align="Align.Right" Typo="Typo.body1" Class="pb-2">Potrebujete vytvoriť tu správnu atmosféru? Naše vonné vosky sú vyrábané na báze esenciálnych olejov a prírodných surovín.</MudText>
+                <MudText Align="Align.Right" Typo="Typo.body1" Class="pb-2">V našej ponuke nájdete viacero druhov: <span style="font-style: italic">levanduľa, ruža, citrus, jablko, jahoda, kokos,</span> ktoré ponúkame v rôznych tvaroch a veľkostiach.</MudText>
+                <MudText Align="Align.Right" Typo="Typo.body1" Class="pb-2">Vašu novú aromalampu si môžete jednoducho zakúpiť v našom e-shope.</MudText>
+            </MudItem>
+            <MudItem xs="6" Style="text-align: left;">
+                <MudImage Style="max-width: 100%"
+                          Elevation="1"
+                          Alt="Pic02"
+                          Class="rounded-3"
+                          Src="img/carousel/scented_harmony_carousel_pic_02.png"/>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider/>
+            </MudItem>
+            <MudItem xs="6" Style="text-align: right;">
+                <MudImage Style="max-width: 100%"
+                          ObjectPosition="ObjectPosition.Right"
+                          Elevation="1"
+                          Alt="Pic01"
+                          Class="rounded-3"
+                          Src="img/carousel/scented_harmony_carousel_pic_01.png"/>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-center">
+                <MudText Align="Align.Left" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Bolesti hlavy, či problémy so spánkom?</MudText>
+                <MudText Align="Align.Left" Typo="Typo.body1" Class="pb-2">Náš produkt je ako stvorený pre vás. Naše esenciálne spreje sú vyrábané z esenciálnych olejov a naturálnych zložiek.</MudText>
+                <MudText Align="Align.Left" Typo="Typo.body1" Class="pb-2">V našej ponuke nájdete: <span style="font-style: italic">levanduľa, eukalyptus, mäta, pomaranč, citrón, kokos, škorica,</span> ktoré ponúkame v rôznych objemoch.</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider/>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-center">
+                <MudText Align="Align.Right" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Už nikdy viac suchá a popraskaná pokožka.</MudText>
+                <MudText Align="Align.Right" Typo="Typo.body1" Class="pb-2">Je vašim problémom neustále suchá pokožka? Pokiaľ áno, neváhajte s kúpou našich mydielok.</MudText>
+                <MudText Align="Align.Right" Typo="Typo.body1" Class="pb-2">Naše mydlá sú vyrábané z mydlovej hmoty a esenciálnych vôni. V našej ponuke nájdete rôzne druhy: <span style="font-style: italic">levanduľa, fialka, aloe vera, ruža, melon/kiwi, škorica</span>, ktoré ponúkame vo rôznych tvaroch a veľkostiach.</MudText>
+            </MudItem>
+            <MudItem xs="6" Style="text-align: left;">
+                <MudImage Style="max-width: 100%"
+                          Elevation="1"
+                          Alt="Pic04"
+                          Class="rounded-3"
+                          Src="img/carousel/scented_harmony_carousel_pic_04.png"/>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider/>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-start align-content-center">
+                <MudText Align="Align.Center" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Dôraz na kvalitu a životné prostredie</MudText>
+                <MudText Align="Align.Center" Class="pb-4">
+                    <MudIcon Style="font-size: 10vw" Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Forest"></MudIcon>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.body1" Class="pb-2">Dbáme na výber surovín a ekologicky šetrné výrobné postupy, ktoré nielen vyhovujú vašim potrebám, ale taktiež rešpektujú životné prostredie.</MudText>
+                <MudText Align="Align.Center" Typo="Typo.body1" Class="pb-2">Naše esenciálne oleje sú extrahované z najkvalitnejších rastlín, aby vám poskytli maximálne prínosy pre telo aj myseľ.</MudText>
+            </MudItem>
+            <MudItem xs="6" Class="d-flex flex-column justify-content-start align-content-center">
+                <MudText Align="Align.Center" Typo="Typo.h4" Class="pb-4" Style="font-family: 'Dancing Script'">Každodenná starostlivosť</MudText>
+                <MudText Align="Align.Center" Class="pb-4">
+                    <MudIcon Style="font-size: 10vw" Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Spa"></MudIcon>
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.body1" Class="pb-2">Sme spoločnosť zameraná na výrobu a predaj esenciálnych produktov pre váš zdravý životný štýl.</MudText>
+                <MudText Align="Align.Center" Typo="Typo.body1" Class="pb-2">Naša široká škála výrobkov zahŕňa čisté oleje, prírodné mydlá, šampóny a ďalšie výrobky, ktoré podporujú vaše celkové pohodlie.</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudMainContent>
+
+<style>
+    .full-width {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .blur-effect  {
+        filter: blur(8px);
+        -webkit-filter: blur(8px);
+    }
+</style>
