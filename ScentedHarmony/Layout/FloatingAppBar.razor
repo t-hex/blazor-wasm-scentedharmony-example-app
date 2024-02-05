@@ -5,26 +5,26 @@
 @inject NavigationManager NM
 @inject IShoppingCartState SCS
 
-<MudAppBar Fixed="true" Color="Color.Secondary">
+<MudAppBar Fixed="true" Style="background-color: var(--scented-harmony-appbar-background) !important;">
     <div class="floating-logo mud-toolbar-gutters mud-elevation-4">
         <img src="ScentedHarmony-LogoMain.png" alt="ScentedHarmony-Logo"/>
     </div>
     <div class="floating-logo-w"></div>
-    <MudButton Color="Color.Dark"
-               Variant="Variant.Text"
+    <MudButton Variant="Variant.Text"
                Class="@GetButtonClass(["Home", string.Empty])"
+               Style="color: var(--scented-harmony-appbar-button-color) !important;"
                @onclick="@(() => NavigateTo("/"))">
         <MudText>O nás</MudText>
     </MudButton>
-    <MudButton Color="Color.Dark"
-               Variant="Variant.Text"
+    <MudButton Variant="Variant.Text"
                Class="@GetButtonClass("Eshop")"
+               Style="color: var(--scented-harmony-appbar-button-color) !important;"
                @onclick="@(() => NavigateTo("/Eshop"))">
         <MudText>E-shop</MudText>
     </MudButton>
     <MudSpacer/>
     <MudBadge Content="@SCS.ShoppingChartProductsCount" Overlap="true" Class="mx-6 my-4">
-        <MudIconButton OnClick="@(() => NavigateTo("/ShoppingCart"))" Size="Size.Small" Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Dark" />
+        <MudIconButton OnClick="@(() => NavigateTo("/ShoppingCart"))" Size="Size.Small" Icon="@Icons.Material.Filled.ShoppingCart" Style="color: var(--scented-harmony-appbar-button-color) !important;" />
     </MudBadge>
 </MudAppBar>
 
@@ -34,7 +34,7 @@
     }
     .floating-logo {
         position: absolute;
-        background-color: var(--mud-palette-secondary) !important;
+        background-color: var(--scented-harmony-appbar-background) !important;
         top: 0;
         left: 50px;
         transition: max-height 0.3s ease;

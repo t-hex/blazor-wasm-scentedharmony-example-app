@@ -1,3 +1,8 @@
+:root {
+    --scented-harmony-appbar-button-color: #ffffff;
+    --scented-harmony-appbar-background: #718645;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     /*min-height: 100%;*/

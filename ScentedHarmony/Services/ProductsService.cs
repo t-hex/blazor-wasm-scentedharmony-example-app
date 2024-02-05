@@ -26,11 +26,17 @@ public class ProductsService : IProductService
         }
     }
 
-    public IEnumerable<Product> GetAllProducts()
-        => GetAllProducts(0, int.MaxValue);
+    public IEnumerable<Product> GetAllProducts(ProductType? filter = null)
+        => GetAllProducts(0, int.MaxValue, filter);
 
-    public IEnumerable<Product> GetAllProducts(int from, int take)
-        => Products.Values.SelectMany(p => p).Skip((from > 0 ? from - 1 : 0) * take).Take(take);
-
-    public int GetAllProductsCount() => Products.Sum(p => p.Value.Count);
+    public IEnumerable<Product> GetAllProducts(int from, int take, ProductType? filter = null)
+        => (filter.HasValue
+                ? Products[filter.Value]
+                : Products.Values.SelectMany(p => p)).Skip((from > 0 ? from - 1 : 0) * take)
+            .Take(take);
+    
+    public int GetAllProductsCount(ProductType? filter = null) =>
+        filter.HasValue
+            ? Products[filter.Value].Count
+            : Products.Sum(p => p.Value.Count);
 }

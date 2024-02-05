@@ -1,6 +1,7 @@
 ﻿@page "/eshop"
 @using ScentedHarmony.Services
 @using ScentedHarmony.Services.DTO
+@using ScentedHarmony.Services.Enums
 @inherits LayoutComponentBase
 
 @inject IProductService IPS
@@ -13,8 +14,29 @@
             <MudText Align="Align.Center" Typo="Typo.h1" Style="font-family: 'Dancing Script'">Naše produkty</MudText>
             <MudDivider/>
         </MudItem>
+        <MudSpacer/>
         <MudItem xs="12" Class="d-flex justify-content-center pb-5">
-            <MudPagination Color="Color.Primary" Selected="_selectedPage" SelectedChanged="OnSelectedPageChanged" BoundaryCount="2" MiddleCount="2" Count="@_totalPagesCount" />
+            <MudSelect T="ProductType?" Label="Kategória"
+                       Clearable="true"
+                       AnchorOrigin="Origin.CenterCenter"
+                       TransformOrigin="Origin.CenterCenter"
+                       Variant="Variant.Outlined"
+                       AdornmentIcon="@Icons.Material.Filled.Category"
+                       Adornment="Adornment.Start"
+                       AdornmentColor="Color.Dark"
+                       Style="background-color: var(--mud-palette-background)"
+                       ValueChanged="@OnFilterValueChanged">
+                @foreach (var pt in Enum.GetValues(typeof(ProductType)))
+                {
+                    <MudSelectItem Value="@((ProductType?)pt)">
+                        @(DisplayFilterNameAttribute.GetDisplayFilterName((ProductType)pt))
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudSpacer/>
+        <MudItem xs="12" Class="d-flex justify-content-center pb-5">
+            <MudPagination Color="Color.Primary" Selected="_selectedPage" SelectedChanged="OnSelectedPageChanged" BoundaryCount="2" MiddleCount="2" Count="@_totalPagesCount"/>
         </MudItem>
         <MudGrid Spacing="4" Justify="Justify.Center">
             @foreach (var item in ProductsList)
@@ -60,9 +82,10 @@
     private int _selectedPage  = 1;
 
     private int _totalProductsCount, _totalPagesCount;
+
+    private ProductType? _productTypeFilter;
     
     private IEnumerable<Order> ProductsList { get; set; } = Array.Empty<Order>();
-    
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,7 +99,7 @@
     private void OnSelectedPageChanged(int newSelectedPage)
     {
         _selectedPage = newSelectedPage;
-        ProductsList = IPS.GetAllProducts(_selectedPage, SelectedPageSize)
+        ProductsList = IPS.GetAllProducts(_selectedPage, SelectedPageSize, _productTypeFilter)
             .Select(p => new Order { Amount = 0, Product = p})
             .ToList();
     }
@@ -96,5 +119,16 @@
     // {
     //     order.Amount = newAmount;
     // }
+
+    private void OnFilterValueChanged(ProductType? productTypeFilter)
+    {
+        _productTypeFilter = productTypeFilter;
+        _totalProductsCount = IPS.GetAllProductsCount(_productTypeFilter);
+        _selectedPage = 1;
+        _totalPagesCount = _totalProductsCount/SelectedPageSize + (_totalProductsCount % SelectedPageSize > 0 ? 1 : 0);
+        ProductsList = IPS.GetAllProducts(_selectedPage, SelectedPageSize, _productTypeFilter)
+            .Select(p => new Order { Amount = 0, Product = p})
+            .ToList();
+    }
 
 }

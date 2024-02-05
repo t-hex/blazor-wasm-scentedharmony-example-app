@@ -9,7 +9,7 @@ public static class MockProducts
     {
         new ProductRegistration
         {
-            Name = "Bomba do kúpeľa (1ks)",
+            Name = "Bomby do kúpeľa (1ks)",
             Description = "Relaxačné bomby pre aféru vody",
             Category = ProductType.BathBomb,
             PackageSizes = [
@@ -25,11 +25,11 @@ public static class MockProducts
                 new FlavorType() { FlavorDescriptor = "Ruža", FlavorCode = "R" }
             ],
             ProductCode = "BS1KS",
-            PromoImg = "1ksbathbomb.png"
+            PromoImg = "1ksbathbomb.jpg"
         },
         new ProductRegistration
         {
-            Name = "Bomba do kúpeľa (5ks)",
+            Name = "Bomby do kúpeľa (5ks)",
             Description = "Relaxačné bomby pre aféru vody",
             Category = ProductType.BathBomb,
             PackageSizes = [
@@ -45,7 +45,7 @@ public static class MockProducts
                 new FlavorType { FlavorDescriptor = "Ruža", FlavorCode = "R" }
             ],
             ProductCode = "BS5KS",
-            PromoImg = "5ksbathbomb.png"
+            PromoImg = "5ksbathbomb.jpg"
         },
         new ProductRegistration
         {
@@ -66,7 +66,7 @@ public static class MockProducts
                 new FlavorType { FlavorDescriptor = "Jablko", FlavorCode = "B" }
             ],
             ProductCode = "SW",
-            PromoImg = "scentedwax.png"
+            PromoImg = "scentedwax.jpg"
         },
         new ProductRegistration
         {
@@ -87,7 +87,7 @@ public static class MockProducts
                 new FlavorType { FlavorDescriptor = "Škorica", FlavorCode = "S" }
             ],
             ProductCode = "SS",
-            PromoImg = "scentedspray.png"
+            PromoImg = "scentedspray.jpg"
         },
         new ProductRegistration
         {
